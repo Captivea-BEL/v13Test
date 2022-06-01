@@ -21,7 +21,7 @@ class ContactLead(models.Model):
     partner_state = fields.Many2one('res.country.state', string='Partner state')
     partner_zip = fields.Char(string='Partner Zip')
     partner_country = fields.Many2one('res.country', string='Partner Country')
-    partner_address_type = fields.Char(string='Address Type', related = 'partner_id.type')
+    partner_address_type = fields.Selection(string='Address Type', related = 'partner_id.type')
     lead_id = fields.Many2one('crm.lead', string='Lead')
     lead_name = fields.Char(string='Lead Name')
     contact_name = fields.Char(string='Contact Name')
