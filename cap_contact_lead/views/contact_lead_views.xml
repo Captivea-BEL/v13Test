@@ -29,7 +29,7 @@
                                 </div>
                                 <field name="partner_email"/>
                                 <field name="partner_phone"/>
-                                <field name="partner_address_type"/>
+                                <field name="partner_address_type" string="Partner Address Type"/>
                             </group>
                         </group>
                     </sheet>
@@ -42,11 +42,21 @@
             <field name="model">contact.lead</field>
             <field name="arch" type="xml">
                 <tree string="Contact/Leads">
-                    <field name="search_field" optional="show"/>
+                    <field name="search_field" invisible="1"/>
                     <field name="lead_id"/>
+                    <field name="lead_phone"/>
+                    <field name="lead_email"/>
+                    <field name="lead_city"/>
+                    <field name="lead_state"/>
                     <field name="contact_name"/>
                     <field name="partner_id"/>
                     <field name="partner_address_type"/>
+                    <field name="partner_street"/>
+                    <field name="partner_street2"/>
+                    <field name="partner_city"/>
+                    <field name="partner_state"/>
+                    <field name="partner_zip"/>
+                    <field name="partner_country"/>
                 </tree>
             </field>
         </record>
