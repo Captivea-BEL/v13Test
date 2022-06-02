@@ -1,0 +1,118 @@
+<odoo>
+    <data>
+        <record id="contact_lead_view_form" model="ir.ui.view">
+            <field name="name">contact.lead.form</field>
+            <field name="model">contact.lead</field>
+            <field name="arch" type="xml">
+                <form string="Contact/Leads" create="0" edit="false">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="lead_id"/>
+                                <field name="lead_phone"/>
+                                <field name="lead_email"/>
+                                <field name="lead_city"/>
+                                <field name="lead_state"/>
+                            </group>
+                            <group>
+                                <field name="partner_id"/>
+                                <label for="" name="address_name">
+                                    <b>Partner Address</b>
+                                </label>
+                                <div class="o_address_format">
+                                    <field name="partner_street"/>
+                                    <field name="partner_street2"/>
+                                    <field name="partner_city"/>
+                                    <field name="partner_state"/>
+                                    <field name="partner_zip"/>
+                                    <field name="partner_country"/>
+                                </div>
+                                <field name="partner_email"/>
+                                <field name="partner_phone"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="contact_lead_view_tree" model="ir.ui.view">
+            <field name="name">contact.lead.tree</field>
+            <field name="model">contact.lead</field>
+            <field name="arch" type="xml">
+                <tree string="Contact/Leads">
+                    <field name="search_field" optional="show"/>
+                    <field name="lead_id"/>
+                    <field name="contact_name"/>
+                    <field name="partner_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="contact_lead_view_search" model="ir.ui.view">
+            <field name="name">contact.lead.search</field>
+            <field name="model">contact.lead</field>
+            <field name="arch" type="xml">
+                <search string="Search Contact/Leads">
+                    <field string="Search Field" name="search_field" />
+                    <field string="Lead/Contact" 
+                        name="lead_id" 
+                        filter_domain="['|','|','|','|','|','|','|','|','|','|',
+                        ('lead_id', 'ilike', self),
+                        ('partner_id', 'ilike', self),
+                        ('contact_name', 'ilike', self),
+                        ('partner_phone', 'ilike', self),
+                        ('lead_phone', 'ilike', self),
+                        ('partner_email', 'ilike', self),
+                        ('lead_email', 'ilike', self),
+                        ('partner_city', 'ilike', self),
+                        ('lead_city', 'ilike', self),
+                        ('partner_state', 'ilike', self),
+                        ('lead_state', 'ilike', self),
+                        ]"/>
+                    <field string="Lead" name="lead_id" />
+                    <field string="Contact" name="contact_name" />
+                    <field string="Lead Phone No." name="lead_phone"/>
+                    <field string="Lead Email" name="lead_email"/>
+                    <field string="Lead Phone" name="lead_phone"/>
+                    <field string="Lead City" name="lead_city"/>
+                    <field string="Lead State" name="lead_state"/>
+                    <field string="Partner" name="partner_id"/>
+                    <field string="Partner Email" name="partner_email"/>
+                    <field string="Partner Phone" name="partner_phone"/>
+                    <field string="Street" name="partner_street"/>
+                    <field string="Street2" name="partner_street2"/>
+                    <field string="City" name="partner_city"/>
+                    <field string="State" name="partner_state"/>
+                    <field string="Zip" name="partner_zip"/>
+                    <field string="Country" name="partner_country"/>
+                    <separator/>
+                    <group expand="1" string="Group By">
+                        <filter name="groupby_partner_id" context="{'group_by' : 'partner_id'}" string="Partner"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="contact_lead_action" model="ir.actions.act_window">
+            <field name="name">Contact/Leads</field>
+            <field name="res_model">contact.lead</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="contact_lead_view_search"/>
+        </record>
+       
+        <!--<record model="ir.rule" id="contact_lead_rule">
+           <field name="name">Contact/Lead</field>
+           <field name="model_id" ref="model_contact_lead"/>
+           <field name="global" eval="True"/>
+           <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>-->
+
+        <menuitem
+            id="contact_lead_menu"
+            name="Contact/Leads"
+            parent="crm.crm_menu_root"
+            action="contact_lead_action"
+            sequence="5"/>
+    </data>
+</odoo>
