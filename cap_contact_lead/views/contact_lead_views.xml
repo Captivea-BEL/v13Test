@@ -81,6 +81,7 @@
                         ('lead_city', 'ilike', self),
                         ('partner_state', 'ilike', self),
                         ('lead_state', 'ilike', self),
+                        ('partner_address_type', 'ilike', self),
                         ]"/>
                     <field string="Lead" name="lead_id" />
                     <field string="Contact" name="contact_name" />
@@ -90,6 +91,7 @@
                     <field string="Lead City" name="lead_city"/>
                     <field string="Lead State" name="lead_state"/>
                     <field string="Partner" name="partner_id"/>
+                    <field string="Address Type" name="partner_address_type"/>
                     <field string="Partner Email" name="partner_email"/>
                     <field string="Partner Phone" name="partner_phone"/>
                     <field string="Street" name="partner_street"/>
