@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+<!--         <record id="account.view_account_payment_invoice_form" model="ir.ui.view">
+            <field name="name">account.payment.invoice.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position='replace'></xpath>
+                <xpath expr="//div[@name='button_box']" position='replace'></xpath>
+                <xpath expr="//sheet" position='after'>
+                    <footer>
+                        <field name="state" invisible="1"/>
+                        <button string='Validate' name="post" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </xpath>
+                <xpath expr="//field[@name='move_line_ids']" position="replace">
+                    <field name="move_line_ids"/>
+                </xpath>
+            </field>
+        </record>
+ -->
+ 		<record id="cap_view_account_payment_invoice_form" model="ir.ui.view">
+            <field name="name">cap.account.payment.invoice.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_invoice_form"/>
+            <field name="arch" type="xml">
+	            <xpath expr="//form/sheet/group/group[2]" position="inside">
+	                <field name="apply_discount"/>
+	            </xpath>
+                <xpath expr="//form/sheet/group/field[@name='invoice_ids']" position="replace">
+                    <!-- <field name="move_line_ids"/> -->
+                    <!-- <field name="invoice_ids"/> -->
+                    <field name="invoice_ids">
+                        <tree string="Invoices"
+			                      editable="bottom"><!-- decoration-info="state == 'draft'"
+			                      decoration-muted="state == 'cancel'"
+			                      banner_route="/account/account_invoice_onboarding"
+			                      js_class="account_tree" -->
+		                    <field name="name" readonly="1"/>
+		                    <!-- <field name="apply_discount"/> -->
+		                    <field name="partner_id" invisible="1"/>
+		                    <field name="invoice_source_email" invisible="1"/>
+		                    <field name="invoice_partner_icon" string=" " readonly="1"/>
+		                    <field name="invoice_partner_display_name" invisible="context.get('default_type') not in ('in_invoice', 'in_refund','in_receipt')" groups="base.group_user" string="Vendor"  readonly="1"/>
+		                    <field name="invoice_partner_display_name" invisible="context.get('default_type') not in ('out_invoice', 'out_refund','out_receipt')" groups="base.group_user" string="Customer" readonly="1"/>
+		                    <field name="invoice_date" optional="show" invisible="context.get('default_type') not in ('in_invoice', 'in_refund','in_receipt')" string="Bill Date" readonly="1"/>
+		                    <field name="invoice_date" optional="show" invisible="context.get('default_type') not in ('out_invoice', 'out_refund','out_receipt')" string="Invoice Date" readonly="1"/>
+		                    <field name="invoice_origin" optional="show" string="Source Document" readonly="1"/>
+		                    <field name="invoice_payment_ref" optional="hide" invisible="context.get('default_type') in ('out_invoice', 'out_refund','out_receipt')"/>
+		                    <field name="ref" optional="hide" readonly="1"/>
+		                    <field name="early_terms_date" readonly="1"/>
+		                    <field name="invoice_user_id" optional="show" invisible="context.get('default_type') not in ('out_invoice', 'out_refund','out_receipt')" string="Sales Person" readonly="1"/>
+		                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" optional="show" readonly="1"/>
+		                    <field name="invoice_date_due" optional="show" readonly="1"/>
+		                    <field name="amount_untaxed_signed" string="Tax Excluded" sum="Total" optional="show" readonly="1"/>
+		                    <field name="amount_tax_signed" string="Tax" sum="Total" optional="hide" readonly="1"/>
+		                    <field name="amount_total_signed" string="Total" sum="Total" optional="show" readonly="1"/>
+		                    <field name="amount_residual_signed" string="Amount Due" sum="Amount Due" optional="show" readonly="1"/>
+		                    <field name="currency_id" invisible="1"/>
+		                    <field name="company_currency_id" invisible="1"/>
+		                    <field name="state" optional="show" readonly="1"/>
+		                    <field name="invoice_payment_state" optional="hide" readonly="1"/>
+		                    <field name="type" invisible="context.get('default_type', True)" readonly="1"/>
+		                </tree>
+                    </field>
+                </xpath>
+            </field>
+        </record>
+ 		
+ 		<record id="cap_view_account_payment_form_multi" model="ir.ui.view">
+ 		    <field name="name">cap.view.account.payment.form.multi</field>
+ 		    <field name="model">account.payment.register</field>
+ 		    <field name="inherit_id" ref="account.view_account_payment_form_multi"/>
+ 		    <field name="arch" type="xml">
+ 		        <xpath expr="//form/group/group[2]" position="after">
+ 		            <group name="payment_difference" attrs="{'invisible': [('payment_difference', '=', 0.0)]}" groups="account.group_account_user">
+                        <label for="payment_difference"/>
+                        <div>
+                            <field name="company_id" invisible="1"/>
+                            <field name="payment_type" invisible="1"/>
+                            <field name="payment_difference"/>
+                            <field name="payment_difference_handling" widget="radio" nolabel="1"/>
+                            <div attrs="{'invisible': [('payment_difference_handling','=','open')]}">
+                                <label for="writeoff_account_id" class="oe_edit_only" string="Post Difference In"/>
+                                <field name="writeoff_account_id" options="{'no_create': True}" string="Post Difference In" attrs="{'required': [('payment_difference_handling', '=', 'reconcile'), ('payment_difference', '!=', 0.0)]}"/>
+                                <label for="writeoff_label" class="oe_edit_only" string="Label"/>
+                                <field name="writeoff_label" attrs="{'required': [('payment_difference_handling', '=', 'reconcile'), ('payment_difference', '!=', 0.0)]}"/>
+                            </div>
+                        </div>
+                    </group>
+ 		        </xpath>
+ 		        <xpath expr="//field[@name='journal_id']" position="before">
+ 		            <label for="amount"/>
+                    <div name="amount_div" class="o_row">
+                        <field name="amount"/>
+                        <field name="currency_id" options="{'no_create': True, 'no_open': True}" groups="base.group_multi_currency"/>
+                    </div>
+ 		        </xpath>
+ 		        <xpath expr="//field[@name='payment_date']" position="after">
+ 		            <field name="communication"/>
+ 		        </xpath>
+ 		        <xpath expr="//field[@name='group_payment']" position="after">
+ 		            <field name="apply_discount"/>
+ 		        </xpath>
+ 		        <xpath expr="//form/group" position="before">
+ 		            <group>
+ 		                <!-- <field name="move_line_ids"/> -->
+ 		            	<!-- <field name="invoice_ids"/> -->
+ 		            	<field name="invoice_ids">
+	                        <tree string="Invoices"
+			                      editable="bottom"><!-- decoration-info="state == 'draft'"
+			                      decoration-muted="state == 'cancel'"
+			                      banner_route="/account/account_invoice_onboarding"
+			                      js_class="account_tree" -->
+			                    <field name="name" readonly="1"/>
+			                    <!-- <field name="apply_discount"/> -->
+			                    <field name="partner_id" invisible="1"/>
+			                    <field name="invoice_source_email" invisible="1"/>
+			                    <field name="invoice_partner_icon" string=" " readonly="1"/>
+			                    <field name="invoice_partner_display_name" invisible="context.get('default_type') not in ('in_invoice', 'in_refund','in_receipt')" groups="base.group_user" string="Vendor"  readonly="1"/>
+			                    <field name="invoice_partner_display_name" invisible="context.get('default_type') not in ('out_invoice', 'out_refund','out_receipt')" groups="base.group_user" string="Customer" readonly="1"/>
+			                    <field name="invoice_date" optional="show" invisible="context.get('default_type') not in ('in_invoice', 'in_refund','in_receipt')" string="Bill Date" readonly="1"/>
+			                    <field name="invoice_date" optional="show" invisible="context.get('default_type') not in ('out_invoice', 'out_refund','out_receipt')" string="Invoice Date" readonly="1"/>
+			                    <field name="invoice_origin" optional="show" string="Source Document" readonly="1"/>
+			                    <field name="invoice_payment_ref" optional="hide" invisible="context.get('default_type') in ('out_invoice', 'out_refund','out_receipt')"/>
+			                    <field name="ref" optional="hide" readonly="1"/>
+			                    <field name="early_terms_date" readonly="1"/>
+			                    <field name="invoice_user_id" optional="show" invisible="context.get('default_type') not in ('out_invoice', 'out_refund','out_receipt')" string="Sales Person" readonly="1"/>
+			                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" optional="show" readonly="1"/>
+			                    <field name="invoice_date_due" optional="show" readonly="1"/>
+			                    <field name="amount_untaxed_signed" string="Tax Excluded" sum="Total" optional="show" readonly="1"/>
+			                    <field name="amount_tax_signed" string="Tax" sum="Total" optional="hide" readonly="1"/>
+			                    <field name="amount_total_signed" string="Total" sum="Total" optional="show" readonly="1"/>
+			                    <field name="amount_residual_signed" string="Amount Due" sum="Amount Due" optional="show" readonly="1"/>
+			                    <field name="currency_id" invisible="1"/>
+			                    <field name="company_currency_id" invisible="1"/>
+			                    <field name="state" optional="show" readonly="1"/>
+			                    <field name="invoice_payment_state" optional="hide" readonly="1"/>
+			                    <field name="type" invisible="context.get('default_type', True)" readonly="1"/>
+			                </tree>
+	                    </field>
+ 		            	<field name="invoice_bill_ids">
+	                        <tree editable="bottom">
+	                        	<field name="partner_id" readonly="1"/>
+	                        	<field name="account_move_ids" widget="many2many_tags" readonly="1"/>
+	                        	<field name="customer_payment_method" attrs="{'column_invisible' : [('parent.payment_type','=','outbound')]}"/>
+	                        	<field name="vendor_payment_method" attrs="{'column_invisible' : [('parent.payment_type','=','inbound')]}"/>
+	                        	<field name="company_id" readonly="1"/>
+	                        	<field name="company_ids" widget="many2many_tags" readonly="1"/>
+	                        	<field name="total_amount" readonly="1"/>
+	                        </tree>
+	                        <form>
+	                        	<group>
+	                        	    <group>
+	                        	    	<field name="partner_id" readonly="1"/>
+	                        			<field name="account_move_ids" widget="many2many_tags" readonly="1"/>
+	                        			<field name="customer_payment_method"/>
+	                        	    </group>
+	                        	    <group>
+	                        	    	<field name="vendor_payment_method"/>
+	                        			<field name="company_id" readonly="1"/>
+	                        			<field name="company_ids" widget="many2many_tags" readonly="1"/>
+	                        			<field name="total_amount" readonly="1"/>
+	                        	    </group>
+	                        	</group>
+	                        </form>
+                        </field>
+ 		            </group>
+ 		        </xpath>
+ 		    </field>
+ 		</record>
+        <!-- <record id="cap_account_payment_form_inherit" model="ir.ui.view">
+            <field name="name">cap.account.payment.form.inherit</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/div/field[@name='move_line_ids']" position="attributes">
+                    <attribute name="invisible">0</attribute>
+                </xpath>
+            </field>
+        </record> -->
+
+    </data>
+</odoo>
