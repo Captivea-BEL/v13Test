@@ -9,6 +9,9 @@
     'website': 'https://www.captivea.us',
     'description': 'Handle EDI Documents',
     'depends': ['kuebix_connector','sale_stock', 'delivery','stock_picking_batch'],
+    'external_dependencies': {
+        'python': ['pysftp'],
+        },
     'data': [
         'security/captivea_edi_security_groups.xml',
         'security/ir.model.access.csv',
