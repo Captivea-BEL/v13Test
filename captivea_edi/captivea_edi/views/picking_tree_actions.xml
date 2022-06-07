@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="batch_selector_form_view" model="ir.ui.view">
+            <field name="name">batch.selector.form</field>
+            <field name="model">batch.selector</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <field nolabel="1" name="message_id" readonly="1" attrs="{'invisible':[('message_id','=',False)]}"/>
+                      <group>
+                          <field name="batch_created" invisible="1"/>
+                          <field name="batch_id" domain="[('state','not in',['done','cancel']),('is_combined_tranfers_batch','!=',False)]"
+                                 options="{'no_create':1, 'no_create_edit': 1}"
+                                 attrs="{'invisible':[('message_id','!=',False)]}"/>
+                      </group>
+                    </sheet>
+                    <footer>
+                        <button name="open_batch" string="OK" type="object" attrs="{'invisible':[('batch_created','=',False)]}"/>
+                        <button attrs="{'invisible':['|',('message_id','!=',False),('batch_id','=',False)]}" name="add_to_batch" type="object" string="Add" class="oe_highlight"/>
+                        <button special="cancel" string="Close" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="button_click_action_combine_stock_picking_tree" model="ir.actions.server">
+            <field name="name">Combine Delivery Orders</field>
+            <field name="binding_model_id" ref="model_stock_picking"/>
+            <field name="model_id" ref="model_stock_picking"/>
+            <field name="state">code</field>
+            <field name="code">
+            action = model.combine_pickings_and_make_batch()
+        </field>
+
+<!--            <field name="res_model">stock.picking</field>-->
+        </record>
+        <record id="button_click_action_add_to_batch_stock_picking_tree" model="ir.actions.act_window">
+            <field name="name">Add To Batch of Combined Orders</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="batch_selector_form_view"/>
+            <field name="binding_model_id" ref="model_stock_picking"/>
+            <field name="res_model">batch.selector</field>
+
+<!--            <field name="res_model">stock.picking</field>-->
+        </record>
+    </data>
+</odoo>

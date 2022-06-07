@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template xml:spacer="preserve">
+    <t t-extend="ListView.buttons">
+        <t t-jquery="button.o_list_export_xlsx" t-operation="after">
+                <t t-debug="pdb"/>
+                <button t-if="widget.modelName == 'stock.picking'" type="button" class="btn btn-primary oe_action_merge_pick_batch"
+                        style="display:none;"
+                        title="Combine Delivery Orders">
+                    <span class="fa fa-retweet"/> Combine
+                </button>
+                <button t-if="widget.modelName == 'stock.picking'" type="button" class="btn btn-primary oe_action_add_to_batch"
+                        style="display:none;"
+                        title="Add To Combined Batch">
+                    <span class="fa fa-plus-square"/> Add To Batch
+                </button>
+        </t>
+    </t>
+</template>

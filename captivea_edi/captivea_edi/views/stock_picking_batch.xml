@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="captivea_stock_picking_batch_form_view" model="ir.ui.view">
+            <field name="name">stock.picking.batch.captivea.form</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="priority">110</field>
+            <field name="arch" type="xml">
+                <form string="Combined Delivery Orders" create="0">
+                    <header>
+                        <button name="confirm_picking" states="draft" string="Confirm" type="object"
+                                class="oe_highlight"/>
+                        <button class="oe_highlight"
+                                states="in_progress"
+                                name="validate_pickings" type="object" string="Validate"/>
+                        <button name="cancel_picking" string="Cancel" type="object" states="in_progress"/>
+                        <!--                            <button name="combine_pickings" class="oe_highlight" type="object" string="Combine"/>-->
+                        <!--                            <button name="add_pickings" type="object" class="oe_highlight" string="Add To Batch"/>-->
+                        <button name="create_batch_kuebix_shipment" string="Create Kuebix Shipment" type="object"
+                                class="btn btn-primary"
+                                attrs="{'invisible': ['|',('is_shipment_id_set','!=',False),('shipping_type_select','!=','kuebix')]}"/>
+                        <button name="delete_batch_kuebix_shipment" string="Delete Kuebix Shipment" type="object"
+                                class="btn btn-primary"
+                                attrs="{'invisible': ['|',('is_shipment_id_set','=',False),('shipping_type_select','!=','kuebix')]}"/>
+                        <button name="import_batch_shipping_detail" string="Import Shipping Detail" type="object"
+                                class="btn btn-primary"
+                                attrs="{'invisible': ['|',('is_shipment_id_set','=',False),('shipping_type_select','!=','kuebix')]}"/>
+                        <button name="action_get_batch_bol" string="Get BOL" type="object" class="btn btn-primary"
+                                attrs="{'invisible': ['|',('is_shipment_id_set','=',False),('shipping_type_select','!=','kuebix')]}"/>
+
+                        <field name="state" widget="statusbar" statusbar_visible="in_progress,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+
+                            <h1>
+                                <field name="name" attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"
+                                       readonly="0" placeholder="Title"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="delivery_address_id" required="1" options="{'no_create': True}"
+                                       domain="[('id','in',delivery_address)]"
+                                       attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"/>
+                                <field name="source_loc_id" readonly="1"
+                                       attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"/>
+                                <field name="company_id" invisible="1"
+                                       attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"/>
+                                <field name="shipping_type_id" readonly="1"
+                                       attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"/>
+                                <field name="x_studio_edi_packaging_type"
+                                       attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"/>
+                                <field name="x_studio_edi_carton_count"
+                                       attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"/>
+                                <field name="warehouse_id" readonly="1"
+                                       attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"/>
+                                <field name="shipping_type_select"/>
+                            </group>
+                        </group>
+                        <separator string="Delivery Addresses" invisible="1"/>
+                        <field name="delivery_address" widget="many2many_tags" invisible="1"/>
+                        <notebook>
+                            <page string="Transfers" delete="1">
+                                <group>
+                                    <!--                                    <separator string="Transfers"/>-->
+                                    <field name="picking_ids" nolabel="1" widget="many2many"
+                                           options="{'not_delete': True}" mode="tree,kanban"
+                                           attrs="{'readonly':[('state', 'in', ['done','cancel'])]}">
+                                        <tree>
+                                            <field name="name"/>
+                                            <field name="scheduled_date"/>
+                                            <field name="location_id"/>
+                                            <field name="backorder_id"/>
+                                            <field name="origin"/>
+                                            <field name="state"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                            <page name="stock_move_line" string="Transfer Lines">
+                                <group>
+                                    <field name="move_line_ids" nolabel="1" widget="many2many"
+                                           attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"
+                                           options="{'not_delete': True}" mode="tree,kanban">
+                                        <tree>
+                                            <field name="product_id" required="1"
+                                                   attrs="{'readonly': ['|', ('state', '=', 'done'), ('move_id', '!=', False)]}"/>
+                                            <field name="package_id" groups="stock.group_tracking_lot"/>
+                                            <field name="result_package_id" groups="stock.group_tracking_lot"/>
+                                            <field name="company_id" invisible="1"/>
+                                            <field name="move_id" invisible="1"/>
+                                            <field name="picking_id"/>
+
+
+                                            <field name="state" invisible="1"/>
+                                            <field name="product_uom_qty" readonly="1"
+                                                   />
+                                            <field name="is_locked" invisible="1"/>
+                                            <field name="qty_done"
+                                                   attrs="{'readonly': [('state', 'in', ('done', 'cancel')), ('is_locked', '=', True)]}"
+                                                   force_save="1" options="{'barcode_events': True}"
+                                                   widget="field_float_scannable"/>
+                                            <field name="product_uom_id" force_save="1"
+                                                   attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                                   groups="uom.group_uom"/>
+                                        </tree>
+                                    </field>
+                                </group>
+
+                            </page>
+                            <page string="EDI">
+                                <group>
+                                    <!--                                    <field name="single_856"/>-->
+                                    <field name="partner_id" invisible="1"/>
+                                    <field name="edi_asn_single"
+                                           attrs="{'readonly':[('state', 'in', ['done','cancel'])]}" readonly="0"
+                                           force_save="1"/>
+                                    <field name="x_edi_accounting_id"
+                                           attrs="{'readonly':[('state', 'in', ['done','cancel'])]}" readonly="1"/>
+                                    <field name="store_number" attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"
+                                           readonly="1"/>
+                                    <field name="edi_vendor_number"
+                                           attrs="{'readonly':[('state', 'in', ['done','cancel'])]}" readonly="1"/>
+                                    <field name="x_edi_ship_to_type"
+                                           attrs="{'readonly':[('state', 'in', ['done','cancel'])]}" readonly="1"/>
+                                    <field name="x_studio_edi_carton_count"
+                                           attrs="{'readonly':[('state', 'in', ['done','cancel'])]}" readonly="1"/>
+                                    <field name="asn_created" attrs="{'readonly':[('state', 'in', ['done','cancel'])]}"
+                                           readonly="1"/>
+                                </group>
+                            </page>
+                            <page name="kuebix_connector" string="Kuebix">
+                                <group>
+                                    <group>
+                                        <field name="carrier" attrs="{'readonly': [('state','in',['done','cancel'])]}"/>
+                                        <field name="scac"/>
+                                        <field name="weight"/>
+                                        <field name="add_tracking_numbers"/>
+                                        <field name="shipment_name"/>
+                                        <field name="liftgate_required"/>
+                                        <field name="appointment_required"/>
+                                    </group>
+                                    <group>
+                                        <field name="shipping_service"/>
+                                        <field name="tracking_ref"/>
+                                        <field name="weight_for_shipping"/>
+                                        <field name="shipment_id"/>
+                                        <field name="kuebix_shipment_processed"/>
+                                        <field name="actual_shipment_cost"/>
+                                        <field name="residential_address"/>
+                                        <field name="is_shipment_id_set" invisible="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="captivea_stock_picking_batch_tree_view" model="ir.ui.view">
+            <field name="name">stock.picking.batch.captivea.tree</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="priority">110</field>
+            <field name="arch" type="xml">
+                <tree string="Combined Delivery Orders" create="0">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <field name="source_loc_id"/>
+                    <field name="warehouse_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="captivea_stock_picking_batch_search_view" model="ir.ui.view">
+            <field name="name">stock.picking.batch.captivea.search</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="priority">110</field>
+            <field name="arch" type="xml">
+                <search string="Combined Delivery Orders">
+                    <group expand="1" string="Group By">
+                        <filter string="User" name="user_id" domain="[]"
+                                context="{'group_by':'user_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="captivea_stock_picking_batch_act_window" model="ir.actions.act_window">
+            <field name="name">Combined Delivery Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.picking.batch</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('captivea_stock_picking_batch_tree_view')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('captivea_stock_picking_batch_form_view')})]"/>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('is_combined_tranfers_batch','=',True)]</field>
+            <field name="context">{'combined_delivery_orders': True}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new batch transfer
+                </p>
+            </field>
+        </record>
+
+        <menuitem name="Combined Delivery Orders" id="captivea_combined_delivery_orders_menu"
+                  parent="stock.menu_stock_warehouse_mgmt" action="captivea_stock_picking_batch_act_window"/>
+
+    </data>
+</odoo>
