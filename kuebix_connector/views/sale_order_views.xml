@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_with_delivery_carrier" model="ir.ui.view">
+        <field name="name">delivery.sale.order.form.view.delivery.carrier</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <header>
+                <button name="fetch_all_carrier"
+                        string="Fetch all carriers"
+                        type="object"
+                        class="btn-primary"/>
+            </header>
+            <xpath expr="//button[@name='action_view_invoice']"
+                   position="before">
+                <button type="object" name="action_fetch_carrier_rates"
+                        class="oe_stat_button">
+                    <field name="carrier_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            <field name="payment_term_id" position="after">
+            	<field name="id" invisible="1"/>
+                <field name="paymenttype" required="1"/>
+                <field name="kuebix_carrier_ids" widget="many2many_tags" invisible="1"/>
+                <label groups="base.group_user" for="kuebix_carrier_id"/>
+                <div groups="base.group_user" class="o_row">
+	                <field name="kuebix_carrier_id" context="{'carrier_name_with_rate': True}" domain="[('id','in', kuebix_carrier_ids)]"/>
+	                <button type="object" name="set_ship_prod_sol" string="Add" class="btn-primary mb-1 px-0"/>
+                </div>
+                <field name="scac" invisible="1"/>
+                <field name="service_name" invisible="1"/>
+            </field>
+            <xpath expr="//notebook/page[1]" position="after">
+                <page name="keubix" string="Kuebix">
+                    <group>
+                    	<group>
+                    		<field name="client_order_ref"/>
+                    		<field name="liftgate_required"/>
+                    		<field name="shipping_service_quote"/>
+                            <field name="appointment_required"/>
+                    	</group>
+                    	<group>
+                    		<field name="residential"/>
+                    		<field name="shipment_type"/>
+							<field name="shipment_mode"/>
+                    	</group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_form_with_carrier_inherit" model="ir.ui.view">
+        <field name="name">delivery.sale.order.form.view.with_carrier.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="delivery.view_order_form_with_carrier"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_open_delivery_wizard'][1]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_open_delivery_wizard'][2]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_open_delivery_wizard'][3]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

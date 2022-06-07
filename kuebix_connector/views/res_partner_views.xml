@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo>
+    <record id="view_res_partner_inherit_kuebix" model="ir.ui.view">
+        <field name="name">res.partner.inherit.kuebix</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]" position='after'>
+                <page string="Kuebix">
+                    <group>
+                        <group>
+                            <field name="liftgate_required" attrs="{'invisible': [('type','not in',('delivery','other'))]}"/>
+                            <field name="residential" attrs="{'invisible': [('type','!=','delivery')]}"/>
+                            <field name="appointment_required" attrs="{'invisible': [('type','not in',('delivery','other'))]}"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

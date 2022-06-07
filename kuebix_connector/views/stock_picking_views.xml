@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo>
+    <record id="view_stock_picking_inherit_kuebix" model="ir.ui.view">
+        <field name="name">stock.picking.inherit.kuebix</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//button[@name='action_cancel']" position="after">
+				<field name="batch_id" invisible="1"/>
+        		<button name="create_kuebix_shipment" string="Create Kuebix Shipment" type="object" class="btn btn-primary" attrs="{'invisible': ['|','|',('picking_type_code','!=','outgoing'),('batch_id','!=', False),('is_shipment_id_set','=',True)]}"/>
+        		<button name="delete_kuebix_shipment" string="Delete Kuebix Shipment" type="object" class="btn btn-primary" attrs="{'invisible': ['|','|',('picking_type_code','!=','outgoing'),('batch_id','!=', False),('is_shipment_id_set','!=',True)]}"/>
+				<button name="import_shipping_detail" string="Import Shipping Details" type="object" class="btn btn-primary" attrs="{'invisible': ['|','|',('picking_type_code','!=','outgoing'),('batch_id','!=', False),('is_shipment_id_set','!=',True)]}"/>
+				<button name="action_get_bol" string="Get BOL" type="object" class="btn btn-primary" attrs="{'invisible': ['|','|',('picking_type_code','!=','outgoing'),('batch_id','!=', False),('is_shipment_id_set','!=',True)]}"/>
+        	</xpath>
+            <xpath expr="//notebook/page[@name='extra']" position='before'>
+                <page string="Kuebix">
+                    <group>
+                        <group>
+                        	<field name="k_type_of_picking" invisible="1"/>
+							<field name="picking_type_name" invisible="1"/>
+                            <field name="shipment_id" readonly="1"/>
+                            <field name="shipment_type" attrs="{'required': [('picking_type_name','==','Delivery Orders')]}"/>
+                            <field name="shipping_service" readonly="1" attrs="{'invisible': [('picking_type_code','!=','outgoing')]}"/>
+                            <field name="other_tracking_numbers" readonly="1" attrs="{'invisible': [('picking_type_code','!=','outgoing')]}"/>
+                            <field name="liftgate_required" readonly="1"  attrs="{'invisible': [('picking_type_code','!=','outgoing')]}"/>
+                            <field name="appointment_required" readonly="1"  attrs="{'invisible': [('picking_type_code','!=','outgoing')]}"/>
+                        </group>
+                        <group>
+							<field name="shipment_name" readonly="1"/>
+							<field name="kuebix_processed" readonly="1"/>
+							<field name="weight_for_shipping" readonly="1"/>
+							<field name="actual_shipping_cost" readonly="1" attrs="{'invisible': [('picking_type_code','!=','outgoing')]}"/>
+							<field name="x_scac_kuebix" readonly="1" attrs="{'invisible': [('picking_type_code','!=','outgoing')]}"/>
+							<field name="bol_number" readonly="1" attrs="{'invisible': [('picking_type_code','!=','outgoing')]}"/>
+							<field name="residential" readonly="1"  attrs="{'invisible': [('picking_type_code','!=','outgoing')]}"/>
+							<field name="is_shipment_id_set" invisible="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="model_stock_picking_action_get_bol" model="ir.actions.server">
+        <field name="name">Get Bill of Lading</field>
+        <field name="model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_get_bol()</field>
+    </record>
+
+    <record id="model_stock_picking_action_get_tracking" model="ir.actions.server">
+        <field name="name">Get Tracking</field>
+        <field name="model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_get_tracking()</field>
+    </record>
+</odoo>

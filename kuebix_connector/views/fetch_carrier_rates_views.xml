@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="fetch_carrier_rates_form_view" model="ir.ui.view">
+        <field name="name">fetch.carrier.rates.form</field>
+        <field name="model">fetch.carrier.rates</field>
+        <field name="arch" type="xml">
+
+            <form string="Fetch carrier rates">
+                <header>
+                    <button name="add_shipping_price"
+                            string="Add rates"
+                            type="object"
+                            class="btn-primary"/>
+                    <button name="delete_carrier_rates"
+                            string="Delete rates"
+                            type="object"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="service_type"/>
+                            <field name="service"/>
+                            <field name="total_price" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="sale_id"/>
+<!--                             <field name="accessorial_name"/>
+                            <field name="accessorial_type"/>
+                            <field name="accessorial_price"/> -->
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="fetch_carrier_rates_tree_view" model="ir.ui.view">
+        <field name="name">fetch.carrier.rates.tree</field>
+        <field name="model">fetch.carrier.rates</field>
+        <field name="arch" type="xml">
+            <tree string="Fetch carrier rates">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="total_price" widget="monetary"/>
+                <!-- <field name="accessorial_price"/> -->
+            </tree>
+        </field>
+    </record>
+
+    <record id="fetch_carrier_rates_search_view" model="ir.ui.view">
+        <field name="name">fetch.carrier.rates.search</field>
+        <field name="model">fetch.carrier.rates</field>
+        <field name="arch" type="xml">
+            <search string="Carriers">
+                <field name="name"
+                       string="Name"/>
+               <!--  <field name="accessorial_name"
+                       string="Accessorial Name"/> -->
+                <field name="sale_id"
+                       string="Sale order"/>
+                <group expand="0" string="Group By">
+                   <!--  <filter string="Accessorial Type" name="accessorial_type" domain=""
+                            context="{'group_by':'accessorial_type'}"/> -->
+                    <filter string="Scac" name="code" domain=""
+                            context="{'group_by':'code'}"/>
+                    <filter string="Sale Order" name="sale_id" domain=""
+                            context="{'group_by':'sale_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_fetch_carrier_rates_action"
+            model="ir.actions.act_window">
+        <field name="name">Fetch carrier rates</field>
+        <field name="res_model">fetch.carrier.rates</field>
+        <field name="view_mode">tree,form,search</field>
+    </record>
+
+</odoo>

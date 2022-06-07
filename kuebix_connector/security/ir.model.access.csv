@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_fetch_carrier_rates,access_fetch_carrier_rates,model_fetch_carrier_rates,base.group_user,1,1,1,1

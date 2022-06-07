@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="product_template_kuebix" model="ir.ui.view">
+        <field name="name">product.template.kuebix.form.view</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id"
+               ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_lots_and_weight']" position="after">
+                <group name="delivery_carrier_info" string="Delivery Carrier Info">
+                    <!-- <field name="weight_uom"/>
+                    <field name="length_uom"/> -->
+                    <field name="freight_class"/>
+                    <!-- <field name="paymenttype"/> -->
+                    <field name="hutype"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
