@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id="view_move_form_inherit_variant_workorders" model="ir.ui.view">
+            <field name="name">stock.move.form.inherit.variant.workorders</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="custom_val" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

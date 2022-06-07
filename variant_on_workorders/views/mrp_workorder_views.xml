@@ -1,0 +1,26 @@
+<odoo>
+    <data>
+        <record id="mrp_workorder_form_view_inherit_variant_workorder" model="ir.ui.view">
+            <field name="name">mrp.workorder.form.inherit.variant.workorder</field>
+            <field name="model">mrp.workorder</field>
+            <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="custom_val"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="mrp_workorder_view_form_tablet_inherit_variant_workorder" model="ir.ui.view">
+            <field name="name">mrp.workorder.view.form.inherit.quality.tablet.new.variant.workorder</field>
+            <field name="model">mrp.workorder</field>
+            <field name="inherit_id" ref="mrp_workorder.mrp_workorder_view_form_tablet"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('o_workorder_bar_content')]/field[@name='product_id']" position="after">
+                    <label for="custom_val" string=""/>
+                    <field name="custom_val" options="{'no_open': True}" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

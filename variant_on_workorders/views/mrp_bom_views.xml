@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="mrp_bom_form_view_inherit_context_add" model="ir.ui.view">
+        <field name="name">mrp.bom.form.inherit.context_add</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_tmpl_id']"
+                   position="attributes">
+                <attribute name="context">{'default_type': 'product', 'mrp_bom': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp.mrp_bom_form_action" model="ir.actions.act_window">
+        <field name="context">{'search_default_group_by_type': True,
+            'default_company_id': allowed_company_ids[0], 'mrp_bom': True}
+        </field>
+    </record>
+</odoo>
