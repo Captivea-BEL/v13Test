@@ -21,8 +21,8 @@ class AccountPayment(models.Model):
     def onchange_payment_date(self):
         total_amount = 0.0
         for inv in self.invoice_ids:
-            if inv.early_terms_date and inv.invoice_date:
-                if inv.invoice_date < self.payment_date and self.payment_date < inv.early_terms_date:
+            if inv.early_terms_date:
+                if self.payment_date <= inv.early_terms_date:
                     total_amount += inv.early_terms_total_due
                 else:
                     total_amount += inv.amount_residual
@@ -39,11 +39,16 @@ class AccountPayment(models.Model):
     
     @api.onchange('apply_discount')
     def onchange_apply_discount(self):
-        draft_payments = self.filtered(lambda p: p.invoice_ids and p.state == 'draft')
-        for pay in draft_payments:
-            if pay.apply_discount == True:
-                pay.amount = pay._compute_payment_amount(pay.invoice_ids, pay.currency_id, pay.journal_id, pay.payment_date)
-                pay.amount = abs(pay.amount)
+        if self.apply_discount:
+            self.amount = sum(self.invoice_ids.mapped('early_terms_total_due'))
+        else:
+            self.amount = sum(self.invoice_ids.mapped('amount_residual'))
+
+        # draft_payments = self.filtered(lambda p: p.invoice_ids and p.state == 'draft')
+        # for pay in draft_payments:
+        #     if pay.apply_discount == True:
+        #         pay.amount = pay._compute_payment_amount(pay.invoice_ids, pay.currency_id, pay.journal_id, pay.payment_date)
+        #         pay.amount = abs(pay.amount)
                 
     
     def action_register_payment(self):
@@ -312,25 +317,25 @@ class AccountPayment(models.Model):
                 pay.payment_difference = 0.0
         (self - draft_payments).payment_difference = 0
     
-    @api.model
-    def _compute_payment_amount(self, invoices, currency, journal, date):
-        rec = super(AccountPayment, self)._compute_payment_amount(invoices, currency, journal, date)
-        super_rec = rec
-        move_id = self.env['account.move'].browse(self._context.get('active_ids'))
-        if len(move_id) == 1 and rec and move_id.early_terms_total_due and move_id.early_terms_total_due != rec:
-            if super_rec > 0.0:
-                rec = move_id.early_terms_total_due
-            elif super_rec < 0.0:
-                rec = -(move_id.early_terms_total_due)
-        if len(move_id) > 1:
-            rec = 0.0
-            for mv in move_id:
-                if mv.early_terms_total_due and mv.amount_total and mv.early_terms_total_due != mv.amount_total:
-                    rec += mv.early_terms_total_due
-                elif mv.early_terms_total_due and mv.amount_total and mv.early_terms_total_due == mv.amount_total:
-                    rec += mv.amount_total
-            if super_rec > 0.0:
-                rec = rec
-            elif super_rec < 0.0:
-                rec = -(rec)
-        return rec
+    # @api.model
+    # def _compute_payment_amount(self, invoices, currency, journal, date):
+    #     rec = super(AccountPayment, self)._compute_payment_amount(invoices, currency, journal, date)
+    #     super_rec = rec
+    #     move_id = self.env['account.move'].browse(self._context.get('active_ids'))
+    #     if len(move_id) == 1 and rec and move_id.early_terms_total_due and move_id.early_terms_total_due != rec:
+    #         if super_rec > 0.0:
+    #             rec = move_id.early_terms_total_due
+    #         elif super_rec < 0.0:
+    #             rec = -(move_id.early_terms_total_due)
+    #     if len(move_id) > 1:
+    #         rec = 0.0
+    #         for mv in move_id:
+    #             if mv.early_terms_total_due and mv.amount_total and mv.early_terms_total_due != mv.amount_total:
+    #                 rec += mv.early_terms_total_due
+    #             elif mv.early_terms_total_due and mv.amount_total and mv.early_terms_total_due == mv.amount_total:
+    #                 rec += mv.amount_total
+    #         if super_rec > 0.0:
+    #             rec = rec
+    #         elif super_rec < 0.0:
+    #             rec = -(rec)
+    #     return rec

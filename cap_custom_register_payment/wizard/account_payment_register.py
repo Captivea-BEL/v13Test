@@ -43,8 +43,8 @@ class payment_register(models.TransientModel):
     def onchange_payment_date(self):
         total_amount = 0.0
         for inv in self.invoice_ids:
-            if inv.early_terms_date and inv.invoice_date:
-                if inv.invoice_date < self.payment_date and self.payment_date < inv.early_terms_date:
+            if inv.early_terms_date:
+                if self.payment_date <= inv.early_terms_date:
                     total_amount += inv.early_terms_total_due
                 else:
                     total_amount += inv.amount_residual
@@ -54,12 +54,17 @@ class payment_register(models.TransientModel):
 
     @api.onchange('apply_discount')
     def onchange_apply_discount(self):
-        total_amount = self.amount
-        if self.apply_discount == True:
-            total_amount = 0.0
-            for inv_bill in self.invoice_bill_ids:
-                total_amount += inv_bill.total_amount
-        self.amount = total_amount
+        if self.apply_discount:
+            self.amount = sum(self.invoice_ids.mapped('early_terms_total_due'))
+        else:
+            self.amount = sum(self.invoice_ids.mapped('amount_residual'))
+        # total_amount = self.amount
+        # if self.apply_discount == True:
+        #     total_amount = 0.0
+        #     for inv_bill in self.invoice_bill_ids:
+        #         total_amount += inv_bill.total_amount
+        #
+        # self.amount = total_amount
     
     
     @api.onchange('invoice_bill_ids')
@@ -93,8 +98,8 @@ class payment_register(models.TransientModel):
     
     def _prepare_payment_vals(self, invoices):
         res = super(payment_register, self)._prepare_payment_vals(invoices)
-        if res.get('amount') != self.amount and len(self.invoice_bill_ids) == 1:
-            res['amount'] = self.amount
+        # if res.get('amount') != self.amount and len(self.invoice_bill_ids) == 1:
+        #     res['amount'] = self.amount
         if self.communication:
             res['communication'] = self.communication
         return res

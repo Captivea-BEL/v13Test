@@ -96,7 +96,7 @@
  		        <xpath expr="//field[@name='journal_id']" position="before">
  		            <label for="amount"/>
                     <div name="amount_div" class="o_row">
-                        <field name="amount"/>
+                        <field name="amount" attrs="{'readonly': [('group_payment', '=', False)]}"/>
                         <field name="currency_id" options="{'no_create': True, 'no_open': True}" groups="base.group_multi_currency"/>
                     </div>
  		        </xpath>
